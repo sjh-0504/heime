@@ -1,0 +1,189 @@
+simen@heymenology.com
+SNA54xwhyjGGrkK
+us2
+45.144.242.200
+SzcZrxm3w2S2M6UC66
+
+us1
+91.220.203.174
+Gpf1QgKlCyB2X047d4
+
+91.220.203.26
+
+2.56.149.87
+SPNNxQkG48l07t8bo0
+
+
+安装：
+https://github.com/v2fly/fhs-install-v2ray
+
+apt-get update -y && apt-get install curl -y
+
+bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+
+
+
+配置文件：
+cat /usr/local/etc/v2ray/config.json
+{
+    "inbounds": [
+        {
+          "port": 56322,
+          "listen": "0.0.0.0",
+          "protocol": "vmess",
+          "settings": {
+            "clients": [
+              {
+                "id": "d70f41d6-4e87-467d-a6af-4e04f21c202c",
+                "alterId": 64
+              }
+            ]
+          },
+          "streamSettings": {
+            "network": "ws",
+            "security": "none",
+            "wsSettings": {
+              "path": "/",
+              "headers": {}
+            }
+          },
+          "tag": "",
+          "sniffing": {
+            "enabled": true,
+            "destOverride": [
+              "http",
+              "tls"
+            ]
+          }
+        }],
+"outbounds": [{
+            "protocol": "freedom",
+            "settings": {}
+            },{
+                "tag": "tg-out",
+                "protocol": "mtproto",
+                "settings": {}
+                }],
+                "routing": {
+                            "rules": 
+                                    [{
+                                        "type": "field",
+                                        "inboundTag": ["tg-in"],
+                                        "outboundTag": "tg-out"
+                                    }]
+                            }
+}
+
+systemctl start v2ray
+
+bbr加速开启 debian自带
+
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p
+lsmod | grep bbr   //查看bbr安装是否完成命令
+
+
+[root@host ~]$ ssh-keygen  <== 建立密钥对
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa): <== 按 Enter
+Created directory '/root/.ssh'.
+Enter passphrase (empty for no passphrase): <== 输入密钥锁码，或直接按 Enter 留空
+Enter same passphrase again: <== 再输入一遍密钥锁码
+Your identification has been saved in /root/.ssh/id_rsa. <== 私钥
+Your public key has been saved in /root/.ssh/id_rsa.pub. <== 公钥
+The key fingerprint is:
+0f:d3:e7:1a:1c:bd:5c:03:f1:19:f1:22:df:9b:cc:08 root@host
+
+替换公钥：
+AAAAB3NzaC1yc2EAAAADAQABAAABAQDpirQIythIJ3SPXXB18wwSwYNi9D/zYIfFtiiEGdlTXsbeLRIrabswjiplEdmkTuoIWiLYQOamRGPi4y9m/ofrpzDxZEiuVEkxho7cCDcGNz7XbdnGGnkQbqwydbTCWuJu1j96R1E9f5ULT5OzV1ufEp97DAAULSb4gmSVMUq/o0C8U/NPJ43klD30dmugMleI1RML9WeX1EPDU4UvuaAil3IreiXdohhZTGcf3ZNiVeG60hxdL5AwdNajDHdzXm2QondIMX4pt5dmrKOKAUBD26fiHuPMMGgOEZongIfLKz7ppjmvFf8tJ6UFQ8a0W7e6ZzzN3DSimdwAD9/IcfcH
+写入id_rsa.pub
+
+键入以下命令，在服务器上安装公钥：
+
+[root@host ~]$ cd .ssh
+[root@host .ssh]$ cat id_rsa.pub >> authorized_keys
+
+如此便完成了公钥的安装。为了确保连接成功，请保证以下文件权限正确：
+
+[root@host .ssh]$ chmod 600 authorized_keys
+[root@host .ssh]$ chmod 700 ~/.ssh
+
+编辑 /etc/ssh/sshd_config 文件，进行如下设置：
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+另外，请留意 root 用户能否通过 SSH 登录：
+PermitRootLogin yes
+当你完成全部设置，并以密钥方式登录成功后，再禁用密码登录：
+
+PasswordAuthentication no
+
+最后，重启 SSH 服务：
+
+[root@host .ssh]$ service sshd restart
+
+
+ufw防火墙开启
+
+1.安装UFW
+	sudo apt install ufw
+
+2.设置默认策略
+	sudo ufw default deny incoming
+	sudo ufw default allow outgoing
+	这些命令将默认值设置为拒绝传入并允许传出连接。
+
+3.允许SSH连接
+	sudo ufw allow 22122
+
+4.允许其他连接
+	特定的IP地址：sudo ufw allow from 203.0.113.4
+
+5.检查UFW状态和规则
+	sudo ufw status verbose
+6.启用UFW
+	sudo ufw enable
+
+其他操作
+	
+	您还可以通过添加to any port后跟端口号to any port指定允许IP地址连接的特定端口。 例如，如果要允许203.0.113.4连接到端口22 （SSH），请使用以下命令：
+	sudo ufw allow from 203.0.113.4 to any port 22
+	
+	拒绝连接
+
+	例如，要拒绝HTTP连接，可以使用以下命令：
+	sudo ufw deny http
+
+	或者，如果要拒绝来自203.0.113.4所有连接，可以使用此命令：
+	sudo ufw deny from 203.0.113.4
+	
+	删除规则
+	
+按规则编号
+如果您使用规则编号删除防火墙规则，那么您要做的第一件事就是获取防火墙规则列表。 UFW status命令具有numbered选项，该选项显示每个规则旁边的数字：
+
+sudo ufw status numbered
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22                         ALLOW IN    15.15.15.0/24
+[ 2] 80                         ALLOW IN    Anywhere
+如果我们决定要删除允许端口80上的HTTP连接的规则2 ，我们可以在以下UFW delete命令中指定：
+
+sudo ufw delete 2
+这将显示确认提示，您可以使用y/n回答。 输入y将删除规则2 。 请注意，如果启用了IPv6，则还需要删除相应的IPv6规则。
+
+
+	
+
+
+
+
+
+
+
+
+
+
