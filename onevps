@@ -12,13 +12,13 @@ cat /usr/local/etc/v2ray/config.json
 {
     "inbounds": [
         {
-          "port": 56322,
+          "port": 10000,
           "listen": "0.0.0.0",
           "protocol": "vmess",
           "settings": {
             "clients": [
               {
-                "id": "d70f41d6-4e87-467d-a6af-4e04f21c202c",
+                "id": "*****************************",
                 "alterId": 64
               }
             ]
@@ -80,7 +80,7 @@ The key fingerprint is:
 0f:d3:e7:1a:1c:bd:5c:03:f1:19:f1:22:df:9b:cc:08 root@host
 
 替换公钥：
-AAAAB3NzaC1yc2EAAAADAQABAAABAQDpirQIythIJ3SPXXB18wwSwYNi9D/zYIfFtiiEGdlTXsbeLRIrabswjiplEdmkTuoIWiLYQOamRGPi4y9m/ofrpzDxZEiuVEkxho7cCDcGNz7XbdnGGnkQbqwydbTCWuJu1j96R1E9f5ULT5OzV1ufEp97DAAULSb4gmSVMUq/o0C8U/NPJ43klD30dmugMleI1RML9WeX1EPDU4UvuaAil3IreiXdohhZTGcf3ZNiVeG60hxdL5AwdNajDHdzXm2QondIMX4pt5dmrKOKAUBD26fiHuPMMGgOEZongIfLKz7ppjmvFf8tJ6UFQ8a0W7e6ZzzN3DSimdwAD9/IcfcH
+AAAAB3NzaC1yc2EAAAADAQABAAABAQDpirQIythIJ3SPXXB1
 写入id_rsa.pub
 
 键入以下命令，在服务器上安装公钥：
